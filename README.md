@@ -20,7 +20,7 @@
 
 I'm a self-taught software engineer transitioning from **5+ years in B2B SaaS and enterprise technology** into backend engineering.
 
-I learn by building complete systems — not just isolated demos.
+I learn by building complete systems, not just isolated demos.
 
 My portfolio deliberately covers:
 
