@@ -4,7 +4,7 @@
 
 I'm a self-taught software engineer transitioning from 5+ years in B2B SaaS and enterprise technology.
 
-I learned software development by building things from scratch — starting with business applications and gradually moving into APIs, databases, background processing, real-time systems, distributed services, and automation.
+I learned software development by building things from scratch - starting with business applications and gradually moving into APIs, databases, background processing, real-time systems, distributed services, and automation.
 
 I enjoy understanding how a system works end-to-end, finding where it breaks, and then fixing it.
 
