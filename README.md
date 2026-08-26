@@ -58,29 +58,6 @@ I enjoy understanding how a system works end-to-end, finding where it breaks, an
 
 ## 🚀 Things I've Built
 
-### 🏢 MJ ERP — Multi-Tenant SaaS ERP
-
-A large multi-tenant ERP system covering business operations across:
-
-**Sales · CRM · Inventory · Procurement · Accounting · HR · Production · Subscriptions · Audit · Integrations**
-
-Built around FastAPI, PostgreSQL, Redis and Celery with:
-
-- Multi-tenant architecture
-- RBAC
-- JWT authentication
-- Async SQLAlchemy
-- Background task processing
-- Payment integrations
-- Audit logging
-- Rate limiting
-- Database migrations
-- Transaction-boundary protection
-
-One of the main engineering concerns was keeping external API calls outside database transactions and pushing them into background workers.
-
----
-
 ### ⚡ ScrapeMesh — Distributed Web Scraping System
 
 A microservices-based scraping and parsing engine.
