@@ -1,307 +1,783 @@
-# Hi, I'm Mrityunjay Lad 👋
+<div align="center">
 
-### Software Engineer | Python Backend | FastAPI | PostgreSQL
+# MRITYUNJAY LAD
 
-I'm a self-taught software engineer transitioning from 5+ years in B2B SaaS and enterprise technology.
+### Backend Engineer · Python · FastAPI · PostgreSQL · Distributed Systems
 
-I learned software development by building things from scratch - starting with business applications and gradually moving into APIs, databases, background processing, real-time systems, distributed services, and automation.
+**I build backend systems that deal with real-world complexity: concurrency, distributed state, asynchronous work, data integrity, and failure.**
 
-I enjoy understanding how a system works end-to-end, finding where it breaks, and then fixing it.
+<br>
 
----
+[![GitHub](https://img.shields.io/badge/GitHub-ladmrityunjay80--ui-181717?style=for-the-badge&logo=github)](https://github.com/ladmrityunjay80-ui)
+[![Email](https://img.shields.io/badge/Email-ladmrityunjay80%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ladmrityunjay80@gmail.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/)
 
-## 🧑‍💻 What I Work With
-
-### Backend
-- Python
-- FastAPI
-- SQLAlchemy
-- Pydantic
-- REST APIs
-- Celery
-- Uvicorn
-- JWT / OAuth2
-- WebSockets
-
-### Databases & Data
-- PostgreSQL
-- Redis
-- ClickHouse
-- SQLAlchemy Async
-- Alembic
-- Data reconciliation
-- Analytics pipelines
-
-### Frontend
-- React
-- TypeScript
-- Vite
-- Zustand
-- Tailwind CSS
-- shadcn/ui
-- Recharts
-
-### Distributed Systems & Infrastructure
-- Docker
-- RabbitMQ
-- Redis Streams / Pub/Sub
-- Microservices
-- Background workers
-- API gateways
-- Rate limiting
-- Circuit breakers
-- Distributed locks
-- AWS S3 / MinIO
-- GitHub Actions
+</div>
 
 ---
 
-## 🚀 Things I've Built
+## 👋 WHO I AM
 
-### ⚡ ScrapeMesh — Distributed Web Scraping System
+I'm a self-taught software engineer transitioning from **5+ years in B2B SaaS and enterprise technology** into backend engineering.
 
-A microservices-based scraping and parsing engine.
+I learn by building complete systems — not just isolated demos.
 
-**FastAPI · Celery · RabbitMQ · Redis · PostgreSQL · MinIO**
+My portfolio deliberately covers:
 
-It includes:
+- API design
+- relational data modelling
+- authentication and authorization
+- asynchronous processing
+- queues and workers
+- real-time communication
+- distributed state
+- caching and streams
+- rate limiting
+- circuit breakers
+- reconciliation
+- observability
+- AI-powered automation
 
-- Distributed scraping workers
-- Multi-domain adapters
-- Proxy rotation
-- `robots.txt` compliance
-- Per-domain concurrency limits
-- Randomized request delays
-- Redis-backed counters
-- Dead-letter queues
-- Raw HTML archival
-- Sentiment analysis
-- Flower monitoring
-
-The system processes URLs asynchronously and uses Celery chords to finalize batch-level results.
+> **I don't want to just say I know a technology. I want the repository to show where I used it, why I used it, and what problem it solved.**
 
 ---
 
-### 🎨 SyncCanvas — Real-Time Collaborative Canvas
+# 🚀 ENGINEERING PORTFOLIO
 
-A high-concurrency collaborative drawing application.
+The projects below are the core of my portfolio.
 
-**FastAPI · WebSockets · Redis Pub/Sub · Redis Streams · PostgreSQL · React · TypeScript**
+**Every project links directly to its source repository.**  
+Open the repository to inspect the implementation, project structure, tests, infrastructure and documentation.
 
-Built with:
+---
+
+# 01 · SYNCCANVAS
+
+## 🎨 High-Concurrency Real-Time Collaboration
+
+**Problem:** synchronize multiple users editing the same canvas while handling reconnects, permissions, quotas and missed events.
+
+### Architecture
+
+```text
+                         ┌─────────────────┐
+                         │     React UI    │
+                         │ TypeScript/Vite │
+                         └────────┬────────┘
+                                  │
+                             WebSocket
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │     FastAPI     │
+                         │  Room Gateway   │
+                         └───────┬─────────┘
+                                 │
+                    ┌────────────┼────────────┐
+                    ▼            ▼            ▼
+              Redis Pub/Sub  Redis Streams  PostgreSQL
+                    │            │            │
+                    ▼            ▼            ▼
+               Fan-out       Replay       Persistence
+```
+
+### What the code demonstrates
 
 - Real-time multi-user collaboration
+- Typed Pydantic WebSocket envelopes
+- Redis Pub/Sub fan-out
+- Redis Streams replay buffer
+- Reconnect with `last_event_id`
 - Presence cursors
-- WebSocket message validation
-- Redis Streams replay
-- Reconnection support
 - JWT authentication
 - Editor / viewer permissions
-- Rate limiting
-- Quotas
+- Message rate limiting
+- Board and element quotas
 - Leader-elected background workers
-- Undo / redo
+- Client-side undo / redo
 - PNG / SVG export
+- Health and metrics endpoints
+- GitHub Actions CI/CD
+
+### Stack
+
+`FastAPI` `WebSockets` `Redis Pub/Sub` `Redis Streams` `PostgreSQL` `Alembic` `React` `TypeScript` `Tailwind` `Zustand`
+
+### 🔎 SOURCE
+
+**[→ OPEN REPOSITORY](https://github.com/ladmrityunjay80-ui/SyncCanvas)**
+
+**[→ BACKEND SOURCE](https://github.com/ladmrityunjay80-ui/SyncCanvas/tree/main/backend)**
+
+**[→ FRONTEND SOURCE](https://github.com/ladmrityunjay80-ui/SyncCanvas/tree/main/frontend)**
 
 ---
 
-### 🚪 GateFlow — API Gateway & Rate Limiter
+# 02 · GATEFLOW
 
-A developer-focused API gateway built with FastAPI and Redis.
+## 🚪 API Gateway & Distributed Rate Limiter
 
-It handles:
+**Problem:** protect downstream microservices while routing requests, authenticating clients, enforcing limits and surviving backend failures.
+
+### Architecture
+
+```text
+                         INTERNET
+                             │
+                             ▼
+                        ┌─────────┐
+                        │  Nginx  │
+                        └────┬────┘
+                             │
+                 ┌───────────┴───────────┐
+                 ▼                       ▼
+          ┌─────────────┐         ┌─────────────┐
+          │ GateFlow A  │         │ GateFlow B  │
+          └──────┬──────┘         └──────┬──────┘
+                 │                       │
+                 └───────────┬───────────┘
+                             ▼
+                        ┌─────────┐
+                        │  Redis  │
+                        └────┬────┘
+                             │
+              ┌──────────────┼──────────────┐
+              ▼              ▼              ▼
+        users-service  orders-service    metrics
+```
+
+### What the code demonstrates
 
 - API-key authentication
-- HMAC-SHA256 key storage
-- Token-bucket rate limiting
-- Atomic Redis Lua scripts
-- Circuit breaking
-- Dynamic routing
-- Streaming proxying
+- HMAC-SHA256 key hashing at rest
+- Constant-time admin key comparison
+- Atomic Redis Lua token buckets
+- Tier-based rate limiting
+- Stateful circuit breakers
+- Dynamic route configuration
+- Hot-reload route invalidation
+- Streaming request / response proxying
 - Redis Sentinel / HA support
-- Prometheus metrics
-- Structured logging
 - Audit streams
+- Telemetry streams
+- Prometheus metrics
+- Structured JSON logging
+- Consolidated downstream OpenAPI
 
-The goal was to understand what happens between a client request and the actual backend services.
+### Stack
+
+`Python` `FastAPI` `Redis` `Lua` `Nginx` `Prometheus` `Docker`
+
+### 🔎 SOURCE
+
+**[→ OPEN REPOSITORY](https://github.com/ladmrityunjay80-ui/GateFlow)**
+
+**[→ VIEW DOCUMENTATION](https://github.com/ladmrityunjay80-ui/GateFlow/tree/main/docs)**
 
 ---
 
-### 🤖 AI Workflow Automation
+# 03 · SCRAPEMESH
 
-A multi-tenant workflow automation platform using AI for business processes.
+## ⚡ Distributed Web Scraping & Parsing
 
-**FastAPI · PostgreSQL · Celery · Redis · React · OpenAI · Anthropic**
+**Problem:** distribute scraping workloads across workers while respecting domain limits, retries, `robots.txt`, proxy failures and result aggregation.
 
-Features include:
+### Architecture
+
+```text
+                    ┌──────────────┐
+                    │ FastAPI API  │
+                    └──────┬───────┘
+                           │
+                           ▼
+                     ┌───────────┐
+                     │ RabbitMQ  │
+                     └─────┬─────┘
+                           │
+             ┌─────────────┼─────────────┐
+             ▼             ▼             ▼
+         Worker 1      Worker 2      Worker 3
+             │             │             │
+             └─────────────┼─────────────┘
+                           │
+                ┌──────────┼──────────┐
+                ▼          ▼          ▼
+              Redis    PostgreSQL   MinIO
+             metrics    results     raw HTML
+```
+
+### What the code demonstrates
+
+- Celery distributed workers
+- RabbitMQ task broker
+- Redis result backend
+- Multi-domain adapter pattern
+- CSS / XPath extraction
+- Proxy rotation
+- Proxy failure eviction
+- `robots.txt` compliance
+- Per-domain concurrency slots
+- Randomized delays
+- Redis atomic batch counters
+- Celery chord finalization
+- Dead-letter queue
+- Gzipped raw HTML cold storage
+- VADER sentiment analysis
+- Flower monitoring
+- Structured JSON logging
+
+### Stack
+
+`FastAPI` `Celery` `RabbitMQ` `Redis` `PostgreSQL` `MinIO` `httpx` `Docker`
+
+### 🔎 SOURCE
+
+**[→ OPEN REPOSITORY](https://github.com/ladmrityunjay80-ui/ScrapeMesh)**
+
+---
+
+# 04 · ANALYTICS & OPERATIONS
+
+## 📊 Payment Reconciliation + Financial Analytics Platform
+
+**Problem:** ingest operational and payment data from multiple sources, reconcile transactions, expose business metrics and monitor the pipeline.
+
+### Data Flow
+
+```text
+ PostgreSQL ───────┐
+ Stripe ───────────┤
+ Razorpay ─────────┤
+ CSV / Excel / JSON ┤
+                   ▼
+             ┌─────────────┐
+             │  Ingestion  │
+             └──────┬──────┘
+                    ▼
+             ┌─────────────┐
+             │ Reconcile   │
+             └──────┬──────┘
+                    ▼
+          ┌─────────┼─────────┐
+          ▼         ▼         ▼
+       Metrics   Alerts    Forecasting
+          │         │         │
+          └─────────┼─────────┘
+                    ▼
+              Live Dashboard
+```
+
+### What the code demonstrates
+
+- Multi-source ingestion
+- Stripe / Razorpay reconciliation
+- Transaction matching
+- Revenue analytics
+- MRR / ARPU
+- Gateway and product metrics
+- Operational metrics
+- Forecasting
+- Model retraining
+- Drift detection
+- Model registry
+- Threshold alerts
+- Email / Slack notifications
+- JWT + RBAC
+- TOTP MFA
+- OAuth2 / OIDC SSO
+- Refresh-token rotation
+- OpenTelemetry
+- Prometheus
+- Sentry
+- Jaeger / OTLP
+- Health checks
+- Operational runbooks
+- Rate limiting
+- Audit logging
+- DVC-lite artifact versioning
+
+### Stack
+
+`FastAPI` `PostgreSQL` `SQLAlchemy Async` `Celery` `Redis` `Next.js` `TypeScript` `AWS S3` `Docker` `Kubernetes`
+
+### 🔎 SOURCE
+
+**[→ OPEN REPOSITORY](https://github.com/ladmrityunjay80-ui/Analytics_And_Operations_Tool)**
+
+**[→ ARCHITECTURE](https://github.com/ladmrityunjay80-ui/Analytics_And_Operations_Tool/tree/main/docs/architecture)**
+
+**[→ RUNBOOKS](https://github.com/ladmrityunjay80-ui/Analytics_And_Operations_Tool/tree/main/docs/runbooks)**
+
+---
+
+# 05 · AI WORKFLOW AUTOMATION
+
+## 🤖 Multi-Tenant AI Workflow Platform
+
+**Problem:** turn business processes into executable, observable workflows while supporting AI decisions, documents, multi-tenancy and background processing.
+
+### Architecture
+
+```text
+                 ┌──────────────────┐
+                 │    React UI      │
+                 │ Workflow Editor  │
+                 └────────┬─────────┘
+                          │
+                          ▼
+                   ┌─────────────┐
+                   │   FastAPI   │
+                   └──────┬──────┘
+                          │
+             ┌────────────┼────────────┐
+             ▼            ▼            ▼
+         PostgreSQL     Redis       AWS S3
+             │            │            │
+             │         Celery           │
+             │            │             │
+             └────────────┼─────────────┘
+                          ▼
+                    AI Providers
+                  OpenAI / Anthropic
+```
+
+### What the code demonstrates
 
 - AI-powered workflow execution
-- PDF/document processing
-- Resume matching
-- Invoice processing
-- Email triage
+- Multi-tenant organizations
+- Workspace isolation
+- RBAC
+- JSON / YAML workflow definitions
+- Sequential execution
+- Parallel execution
+- Retry and error handling
+- WebSocket execution monitoring
 - Workflow versioning
 - Rollback
-- RBAC
-- WebSocket execution updates
+- PDF processing
+- Email/document parsing
+- AI structured extraction
+- Invoice processing
+- Resume matching
+- Email triage
 - S3 document storage
 - Email / Slack / webhook notifications
 
----
+### Stack
 
-### 📊 Analytics & Operations Tool
+`FastAPI` `PostgreSQL` `SQLAlchemy` `Celery` `Redis` `React` `Vite` `Zustand` `OpenAI` `Anthropic` `AWS S3`
 
-A financial analytics and payment reconciliation system.
+### 🔎 SOURCE
 
-**FastAPI · PostgreSQL · SQLAlchemy Async · Celery · Redis**
-
-The system works with data from multiple sources and focuses on:
-
-- Payment reconciliation
-- Revenue analytics
-- MRR / ARPU
-- Transaction matching
-- Operational metrics
-- Forecasting
-- Alerts
-- Audit logs
-- Distributed tracing
-- Health checks
-
-I'm particularly interested in the engineering problems around reliable data processing and reconciliation.
+**[→ OPEN REPOSITORY](https://github.com/ladmrityunjay80-ui/AI_Enhanced_Workflow_Automation_Tool)**
 
 ---
 
-### 🛒 E-Commerce & SaaS Admin Dashboard
+# 06 · E-COMMERCE & SaaS DASHBOARD
 
-A full-stack business management dashboard.
+## 🛒 Full-Stack Business Management Platform
 
-**React · TypeScript · FastAPI · PostgreSQL · SQLAlchemy · Zustand · Recharts**
+**Problem:** build a realistic SaaS application where authentication, permissions, payments, inventory, subscriptions, background jobs and real-time data all interact.
 
-Includes:
+### System
 
-- Customer management
-- Products
-- Orders
-- Subscriptions
-- Invoices
-- Payments
-- Analytics
+```text
+React / TypeScript
+        │
+        ▼
+     FastAPI
+        │
+ ┌──────┼──────────┐
+ ▼      ▼          ▼
+Postgres Redis    Celery
+ │                 │
+ └──────┬──────────┘
+        ▼
+ Payments / Storage / Email
+```
+
+### What the code demonstrates
+
+- User management
 - RBAC
-- Real-time updates
-- Background jobs
+- Permission-gated UI
+- Customer management
+- Product management
+- Inventory
+- Orders
+- Atomic stock handling
+- Subscriptions
+- Trials
+- Plans
+- Categories
+- Invoices
+- Payment processing
+- Stripe
+- Razorpay
+- PayPal
 - OAuth
-- Webhook verification
+- JWT access / refresh tokens
+- Webhook signature verification
+- Real-time dashboards
+- Celery background jobs
+- Redis
+- S3 / Cloudinary
+- GitHub Actions CI/CD
+- Backend and frontend tests
+
+### Stack
+
+`React` `TypeScript` `Vite` `FastAPI` `PostgreSQL` `SQLAlchemy` `Zustand` `Redis` `Celery` `Recharts`
+
+### 🔎 SOURCE
+
+**[→ OPEN REPOSITORY](https://github.com/ladmrityunjay80-ui/E_Commerce_And_SaaS_Dashboard)**
 
 ---
 
-### 💼 CRM — Full-Stack CRM Application
+# 07 · CRM BACKEND + FRONTEND
 
-One of my first major projects and especially relevant to my previous career in B2B sales.
+## 💼 Full-Stack CRM
 
-**Python · FastAPI · PostgreSQL · SQLAlchemy · Pydantic · JWT · Alembic**
+This project is particularly meaningful because it connects my **previous B2B SaaS / sales background** with software engineering.
 
-Built from scratch with:
+### Backend
 
-- Leads
-- Contacts
-- Deals
-- Authentication
-- Authorization
-- Relational data modelling
-- REST APIs
-- Database migrations
-- OpenAPI documentation
+```text
+FastAPI
+   │
+   ├── Authentication
+   ├── Users
+   ├── Leads
+   ├── Contacts
+   ├── Companies
+   ├── Deals
+   ├── Activities
+   └── Products
+          │
+          ▼
+      PostgreSQL
+```
 
-My previous experience working with CRM and sales workflows directly influenced how I designed this system.
+### What the code demonstrates
 
----
+- FastAPI REST APIs
+- JWT authentication
+- Password hashing
+- RBAC
+- SQLAlchemy models
+- Pydantic schemas
+- PostgreSQL
+- CRUD API design
+- Database configuration
+- API versioning
+- OpenAPI / Swagger documentation
+- React + TypeScript frontend
+- React Query
+- Zustand
+- Protected routes
+- Dashboard
+- Leads management
 
-### 💰 ArbitrageX — Distributed Price Arbitrage Pipeline
+### 🔎 SOURCE
 
-An experimental distributed pipeline for finding price differences across e-commerce sources.
-
-**Redis Streams · ClickHouse · PostgreSQL · FastAPI · RabbitMQ · Docker**
-
-The architecture separates:
-
-`Gateway → Scraping → Scheduling → Streaming → Arbitrage Engine → Analytics → Actions`
-
-It uses PostgreSQL for transactional data and ClickHouse for analytical workloads.
-
----
-
-## 🧠 How I Like to Build
-
-I tend to learn by building.
-
-Instead of stopping at:
-
-> "I know FastAPI."
-
-I prefer getting to:
-
-> "I built an API with FastAPI, connected it to PostgreSQL, added authentication, put background work behind Celery, introduced Redis, tested failure cases, and then figured out what broke when the pieces interacted."
-
-That's where most of my learning happens.
-
-I'm particularly interested in:
-
-- Backend engineering
-- API design
-- PostgreSQL and data modelling
-- Distributed systems
-- Async processing
-- Real-time applications
-- System reliability
-- Performance and debugging
-- Automation
-- AI-powered applications
+**[→ OPEN GITHUB PROFILE / REPOSITORIES](https://github.com/ladmrityunjay80-ui?tab=repositories)**
 
 ---
 
-## 🔧 Current Focus
+# 🧭 REPOSITORY MAP
 
-Right now I'm focusing on becoming a stronger backend engineer, particularly around:
-
-**Python → FastAPI → PostgreSQL → Redis → Distributed Systems → Production Engineering**
-
-I'm also continuing to improve my understanding of system design, testing, observability, performance, and deployment.
-
----
-
-## 📚 Background
-
-Before moving into software development, I spent 5+ years working in B2B SaaS and enterprise technology.
-
-That experience taught me something I still find useful when building software:
-
-**understand the business problem before trying to solve the technical problem.**
-
-I've worked with customers, enterprise environments, sales cycles, product demonstrations and business requirements.
-
-Now I'm bringing that understanding into software development.
+| Repository | Primary Engineering Problem | Core Technologies |
+|---|---|---|
+| **[SyncCanvas](https://github.com/ladmrityunjay80-ui/SyncCanvas)** | Real-time distributed state | FastAPI · WebSockets · Redis Streams |
+| **[GateFlow](https://github.com/ladmrityunjay80-ui/GateFlow)** | Gateway / rate limiting | FastAPI · Redis · Lua · Nginx |
+| **[ScrapeMesh](https://github.com/ladmrityunjay80-ui/ScrapeMesh)** | Distributed workloads | Celery · RabbitMQ · Redis |
+| **[Analytics & Operations](https://github.com/ladmrityunjay80-ui/Analytics_And_Operations_Tool)** | Reconciliation / analytics | FastAPI · PostgreSQL · Celery |
+| **[AI Workflow Automation](https://github.com/ladmrityunjay80-ui/AI_Enhanced_Workflow_Automation_Tool)** | AI workflow execution | FastAPI · Celery · Redis · AI |
+| **[SaaS Dashboard](https://github.com/ladmrityunjay80-ui/E_Commerce_And_SaaS_Dashboard)** | Full-stack SaaS | React · FastAPI · PostgreSQL |
+| **CRM** | Business application / APIs | FastAPI · PostgreSQL · React |
 
 ---
 
-## 📌 A Few Things About Me
+# 🔬 CODE-FIRST ENGINEERING
 
-- I prefer building over following tutorials.
-- I enjoy debugging problems that don't have an obvious answer.
-- I like understanding systems end-to-end.
-- I'm comfortable learning unfamiliar technologies when the problem requires them.
-- I care about how software behaves under failure, not just when everything works.
-- I'm currently looking for opportunities to grow as a software/backend engineer.
+I prefer to make engineering decisions visible in the code.
+
+## Distributed Systems
+
+```text
+RabbitMQ
+   │
+   ├── Celery workers
+   │
+   └── Dead-letter queues
+
+Redis
+   │
+   ├── Pub/Sub
+   ├── Streams
+   ├── Rate limits
+   ├── Caching
+   └── Atomic counters
+```
+
+## Real-Time Systems
+
+```text
+Client
+  │
+  │ WebSocket
+  ▼
+FastAPI
+  │
+  ▼
+Redis Pub/Sub
+  │
+  ├── Room fan-out
+  └── Presence
+
+Redis Streams
+  │
+  └── Missed-event replay
+```
+
+## Reliability
+
+```text
+Request
+  │
+  ├── Authentication
+  ├── Rate limit
+  ├── Validation
+  ├── Routing
+  ├── Retry / fallback
+  ├── Circuit breaker
+  └── Observability
+```
+
+## Data Integrity
+
+```text
+Raw Sources
+    ↓
+Normalization
+    ↓
+Matching
+    ↓
+Reconciliation
+    ↓
+Validation
+    ↓
+Analytics / Alerts
+```
 
 ---
 
-## 🤝 Let's Connect
+# 🧠 ENGINEERING PRINCIPLES
 
-If you're working on backend systems, distributed applications, SaaS products, automation, or just like building interesting things, feel free to connect.
+### 1. Build the whole path
+
+I learn fastest when I can trace a request from:
+
+`client → API → database → queue → worker → external service → result`
+
+### 2. Make failure explicit
+
+A system isn't interesting only when everything works.
+
+I care about:
+
+- retries
+- reconnects
+- duplicate events
+- rate limits
+- stale state
+- worker failure
+- dependency failure
+- partial processing
+- dead-letter queues
+- circuit breakers
+
+### 3. Use the right data store for the job
+
+PostgreSQL for durable relational state.
+
+Redis for fast state, coordination, streams and rate limiting.
+
+Object storage for large artifacts.
+
+Queues for asynchronous work.
+
+### 4. Observe what you build
+
+I increasingly treat:
+
+`logs + metrics + traces + health checks + runbooks`
+
+as part of the system rather than an afterthought.
+
+---
+
+# 🛠️ TECHNOLOGY STACK
+
+### Backend
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=flat-square)
+
+### Frontend
+
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+
+### Databases / Messaging
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=flat-square&logo=rabbitmq&logoColor=white)
+![Celery](https://img.shields.io/badge/Celery-37814A?style=flat-square&logo=celery&logoColor=white)
+
+### Infrastructure / Observability
+
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white)
+
+---
+
+# 📈 GITHUB ACTIVITY
+
+<div align="center">
+
+<img src="https://github-readme-stats.vercel.app/api?username=ladmrityunjay80-ui&show_icons=true&include_all_commits=true&hide_border=true&rank_icon=github" height="170" alt="GitHub statistics">
+
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=ladmrityunjay80-ui&layout=compact&langs_count=8&hide_border=true" height="170" alt="Top languages">
+
+<br><br>
+
+<img src="https://streak-stats.demolab.com?user=ladmrityunjay80-ui&hide_border=true" alt="GitHub contribution streak">
+
+</div>
+
+---
+
+# 🎯 CURRENT DIRECTION
+
+```text
+Python
+   ↓
+FastAPI
+   ↓
+PostgreSQL
+   ↓
+Redis
+   ↓
+Async Processing
+   ↓
+Distributed Systems
+   ↓
+Observability
+   ↓
+Production Engineering
+```
+
+I'm currently focused on becoming a stronger **backend / platform engineer**, particularly around:
+
+- system design
+- distributed systems
+- API architecture
+- PostgreSQL
+- Redis
+- asynchronous processing
+- real-time systems
+- reliability
+- performance
+- testing
+- observability
+- AI-enabled backend systems
+
+---
+
+# 💼 FROM B2B SAAS TO SOFTWARE ENGINEERING
+
+Before software engineering, I spent **5+ years in B2B SaaS and enterprise technology**.
+
+That background is directly useful when building software.
+
+I understand:
+
+- customer workflows
+- business requirements
+- CRM processes
+- enterprise buying environments
+- product demonstrations
+- operational pain points
+- translating business problems into software requirements
+
+My CRM project is an example of that overlap: the domain knowledge from my previous career influenced the way I approached the system.
+
+> **I bring both sides of the problem: understanding what the business needs and learning how to build the system that delivers it.**
+
+---
+
+# 🔗 START HERE
+
+If you're a recruiter or engineering manager, these are the repositories I'd recommend opening first:
+
+### 🥇 SyncCanvas
+**Best representation of:** real-time systems + distributed state
+
+→ **[OPEN SOURCE](https://github.com/ladmrityunjay80-ui/SyncCanvas)**
+
+### 🥈 GateFlow
+**Best representation of:** backend infrastructure + reliability
+
+→ **[OPEN SOURCE](https://github.com/ladmrityunjay80-ui/GateFlow)**
+
+### 🥉 ScrapeMesh
+**Best representation of:** distributed workers + asynchronous processing
+
+→ **[OPEN SOURCE](https://github.com/ladmrityunjay80-ui/ScrapeMesh)**
+
+### 📊 Analytics & Operations
+**Best representation of:** data pipelines + reconciliation + observability
+
+→ **[OPEN SOURCE](https://github.com/ladmrityunjay80-ui/Analytics_And_Operations_Tool)**
+
+### 🤖 AI Workflow Automation
+**Best representation of:** AI + backend architecture + workflows
+
+→ **[OPEN SOURCE](https://github.com/ladmrityunjay80-ui/AI_Enhanced_Workflow_Automation_Tool)**
+
+### 🛒 SaaS Dashboard
+**Best representation of:** full-stack SaaS + business logic
+
+→ **[OPEN SOURCE](https://github.com/ladmrityunjay80-ui/E_Commerce_And_SaaS_Dashboard)**
+
+---
+
+# 🤝 CONTACT
 
 **Mrityunjay Lad**
 
-📍 Pune, Maharashtra  
-📧 ladmrityunjay80@gmail.com
+📍 Pune, Maharashtra, India
 
-[LinkedIn](https://www.linkedin.com/in/mrityunjay-lad-5b901b179/) · [GitHub](https://github.com/ladmrityunjay80-ui)
+📧 **[ladmrityunjay80@gmail.com](mailto:ladmrityunjay80@gmail.com)**
+
+🔗 **[GitHub](https://github.com/ladmrityunjay80-ui)**
+
+🔗 **[LinkedIn](https://www.linkedin.com/)**
+
+---
+
+<div align="center">
+
+### Build systems. Understand failure. Keep learning.
+
+</div>
